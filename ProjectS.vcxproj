@@ -80,8 +80,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\Chess-in-SDL\SDL2_image-2.0.1\include;D:\Chess-in-SDL\SDL2-2.0.20\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Chess-in-SDL\SDL2-2.0.20\include;D:\Chess-in-SDL\SDL2_image-2.0.1\include;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Chess-SDL\SDL2_image-2.0.1\include;D:\Chess-SDL\SDL2-2.0.20\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Chess-SDL\SDL2-2.0.20\include;D:\Chess-SDL\SDL2_image-2.0.1\include;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -123,12 +123,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\Chess-in-SDL\SDL2_image-2.0.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Chess-SDL\SDL2_image-2.0.1\include;D:\Chess-SDL\SDL2-2.0.20\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>D:\Chess-in-SDL\SDL2-2.0.20\lib\x64;D:\Chess-in-SDL\SDL2_image-2.0.1\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\Chess-SDL\SDL2-2.0.20\lib\x64;D:\Chess-SDL\SDL2_image-2.0.1\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

@@ -1,1 +1,17 @@
-﻿  ProjectS.vcxproj -> D:\Chess-in-SDL\x64\Debug\ProjectS.exe
+﻿  ChessPiece.cpp
+  Main.cpp
+  Map.cpp
+  program.cpp
+D:\Chess-SDL\program.cpp(171,18): warning C4244: "=": konwersja z "double" do "Sint32", możliwa utrata danych
+D:\Chess-SDL\program.cpp(173,18): warning C4244: "=": konwersja z "double" do "Sint32", możliwa utrata danych
+D:\Chess-SDL\program.cpp(175,24): warning C4244: "=": konwersja z "double" do "Sint32", możliwa utrata danych
+D:\Chess-SDL\program.cpp(177,24): warning C4244: "=": konwersja z "double" do "Sint32", możliwa utrata danych
+D:\Chess-SDL\program.cpp(179,24): warning C4244: "=": konwersja z "double" do "Sint32", możliwa utrata danych
+D:\Chess-SDL\program.cpp(181,24): warning C4244: "=": konwersja z "double" do "Sint32", możliwa utrata danych
+D:\Chess-SDL\program.cpp(183,24): warning C4244: "=": konwersja z "double" do "Sint32", możliwa utrata danych
+D:\Chess-SDL\program.cpp(185,24): warning C4244: "=": konwersja z "double" do "Sint32", możliwa utrata danych
+  Promotion.cpp
+  Window2Tex.cpp
+  TextureManager.cpp
+  Generowanie kodu...
+  ProjectS.vcxproj -> D:\Chess-SDL\x64\Debug\ProjectS.exe

@@ -4,8 +4,6 @@
 Program* program = nullptr;
 Promotion* promotion = nullptr;
 
-
-
 int main(int argc, char* argv[])
 {
 	// Define program refresh

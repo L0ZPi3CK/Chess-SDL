@@ -3,3 +3,4 @@ F:\3.MyProjects\ProjectS\x64\Debug\ProjectS.exe
 F:\3. MyProjects\ProjectS\x64\Debug\ProjectS.exe
 D:\3. MyProjects\ProjectS\x64\Debug\ProjectS.exe
 D:\Chess-in-SDL\x64\Debug\ProjectS.exe
+D:\Chess-SDL\x64\Debug\ProjectS.exe

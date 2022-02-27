@@ -183,7 +183,7 @@ void Program::centerMousePosition()
 		Mouse.x = (base * 6) + base * 0.22;
 	else if (Mouse.x > base * 7 && Mouse.x <= base * 8)
 		Mouse.x = (base * 7) + base * 0.22;
-	else if (Mouse.x > base * 8)						// Zabezpieczenie przed wyjmowaniem pionkow spoza planszy
+	else if (Mouse.x > base * 8)						// Protection against taking pieces out of the board
 	{
 		Mouse.x = windowHeight+1;
 		Mouse.y = 0;

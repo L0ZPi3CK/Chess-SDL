@@ -2,7 +2,7 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>D:\Chess-in-SDL\x64\Debug\ProjectS.exe</FullPath>
+      <FullPath>D:\Chess-SDL\x64\Debug\ProjectS.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />
