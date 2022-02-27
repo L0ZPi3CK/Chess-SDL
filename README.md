@@ -10,3 +10,12 @@ Open .sln file, go to properties an check:
 ![screen3s](https://user-images.githubusercontent.com/84734341/155896328-5297074e-e2cc-454b-89a5-4198880c5f00.png)
 4. Linker/Input:  
 ![screen4s](https://user-images.githubusercontent.com/84734341/155896331-bdf7e37f-575e-433d-9d7f-ee6f020d37ed.png)
+
+What's currently done:
+- All pieces movement that include:
+1. Rook movement and beating    (Black and White)
+2. Pawn movement and beating    (Black and White)
+3. Knight movement and beating  (Black and White)
+4. Bishop movement and beating  (Black and White)
+5. Queen movement and beating   (Black and White)
+6. King movement and beating    (Black and White)
