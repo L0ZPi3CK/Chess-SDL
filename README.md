@@ -9,7 +9,9 @@ Open .sln file, go to properties an check:
 3. Linker/General:  
 ![screen3s](https://user-images.githubusercontent.com/84734341/155896328-5297074e-e2cc-454b-89a5-4198880c5f00.png)
 4. Linker/Input:  
-![screen4s](https://user-images.githubusercontent.com/84734341/155896331-bdf7e37f-575e-433d-9d7f-ee6f020d37ed.png)
+![screen4s](https://user-images.githubusercontent.com/84734341/155896331-bdf7e37f-575e-433d-9d7f-ee6f020d37ed.png)  
+  
+Or you can try to save folder as D:\Chess-SDL  
 
 !!! I created this chess without any chess engine.  
 !!! The game consists of alternately moving the pawns until the king is killed (king mate)
