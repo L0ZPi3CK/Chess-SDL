@@ -3,10 +3,10 @@
 First, after downloading the folder you have to make sure that path to SDL2 is correct
 Open .sln file, go to properties an check:
 1. VC++ Directories:  
-![ssds](https://user-images.githubusercontent.com/84734341/155894350-ad9a2857-3263-45e3-84bc-9433be87b171.png)
+![screen1s](https://user-images.githubusercontent.com/84734341/155896312-d55fda5b-2734-45ca-bb51-1dc2fd4b61ed.png)
 2. C/C++/General:  
-![screen2](https://user-images.githubusercontent.com/84734341/155895135-e43d5518-4759-49cd-b559-c815fa8b4786.png)
+![screen2s](https://user-images.githubusercontent.com/84734341/155896317-6bda2796-3882-4202-b22a-684d739f1af7.png)
 3. Linker/General:  
-![screen3](https://user-images.githubusercontent.com/84734341/155895166-7225147c-092c-48b3-a0a1-389a4caf65be.png)
+![screen3s](https://user-images.githubusercontent.com/84734341/155896328-5297074e-e2cc-454b-89a5-4198880c5f00.png)
 4. Linker/Input:  
-![screen4](https://user-images.githubusercontent.com/84734341/155895178-5fed3d62-c12a-4bd6-90cf-b1acab860f1e.png)
+![screen4s](https://user-images.githubusercontent.com/84734341/155896331-bdf7e37f-575e-433d-9d7f-ee6f020d37ed.png)
