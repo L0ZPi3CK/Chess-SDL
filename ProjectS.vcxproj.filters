@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Pliki źródłowe">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Pliki nagłówkowe">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Pliki zasobów">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Pliki nagłówkowe\Entity Component System">
+      <UniqueIdentifier>{33168c27-6685-4ea8-9d2c-5380cd0db155}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki źródłowe\Entity Component System">
+      <UniqueIdentifier>{5a7f2308-39e4-4979-8464-9a11c26252d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{168b69c1-bdbf-442e-9eb3-418627ce339d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="program.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>Pliki źródłowe\Entity Component System</Filter>
+    </ClCompile>
+    <ClCompile Include="ChessPiece.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="Map.cpp">
+      <Filter>Pliki źródłowe\Entity Component System</Filter>
+    </ClCompile>
+    <ClCompile Include="Promotion.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="Window2Tex.cpp">
+      <Filter>Pliki źródłowe\Entity Component System</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="program.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>Pliki nagłówkowe\Entity Component System</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessPiece.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.h">
+      <Filter>Pliki nagłówkowe\Entity Component System</Filter>
+    </ClInclude>
+    <ClInclude Include="Promotion.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="Window2Tex.h">
+      <Filter>Pliki nagłówkowe\Entity Component System</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\chess.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\black_square.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\brown_square.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\dark_brown_square.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\white_square.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\brown_texture.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\window2.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\yellow_square.png">
+      <Filter>Assets</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
