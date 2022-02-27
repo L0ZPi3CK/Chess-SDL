@@ -27,6 +27,7 @@ What's currently done:
 - King movement and beating    (Black and White)
 3. Putting away broken Pieces.
 4. Promotion of a pawn when it reaches the end line.
+5. Alternating movement of pieces  
 
 What's to do:
 1. Matting a king
