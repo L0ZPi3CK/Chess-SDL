@@ -1,4 +1,8 @@
 # Chess-SDL
+ Chess:
+ ![obraz](https://user-images.githubusercontent.com/84734341/158079083-a46e05cc-b00c-4e2b-8b6e-962a796b1d48.png)
+
+ 
  
 First, after downloading the folder you have to make sure that path to SDL2 is correct
 Open .sln file, go to properties an check:
