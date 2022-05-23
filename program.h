@@ -5,7 +5,7 @@
 #include "SDL_image.h"
 
 // Window resolution
-const int windowWidth = 1280;
+const int windowWidth = 800;
 const int windowHeight = 720;
 const int promotionWindowWidth = 560;
 const int promotionWindowHeight = 230;
@@ -17,7 +17,7 @@ public:
 	~Program();
 
 	bool promotionWindow = false;
-	int clickedPiecenumber;
+	int clickedPiecenumber = 0;
 	int clickedPiece = 0;
 
 	void init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen);

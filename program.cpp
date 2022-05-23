@@ -165,24 +165,24 @@ bool Program::running()
 
 void Program::centerMousePosition()
 {
-	const int base = windowHeight / 8;
+	const int base = int(windowHeight / 8);
 
 	if (Mouse.x >= 0 && Mouse.x <= base)
-		Mouse.x = base * 0.22;
+		Mouse.x = int(base * 0.22);
 	else if (Mouse.x > base && Mouse.x <= base * 2)
-		Mouse.x = base * 1.22;
+		Mouse.x = int(base * 1.22);
 	else if (Mouse.x > base * 2 && Mouse.x <= base * 3)
-		Mouse.x = (base * 2) + base * 0.22;
+		Mouse.x = int((base * 2) + base * 0.22);
 	else if (Mouse.x > base * 3 && Mouse.x <= base * 4)
-		Mouse.x = (base * 3) + base * 0.22;
+		Mouse.x = int((base * 3) + base * 0.22);
 	else if (Mouse.x > base * 4 && Mouse.x <= base * 5)
-		Mouse.x = (base * 4) + base * 0.22;
+		Mouse.x = int((base * 4) + base * 0.22);
 	else if (Mouse.x > base * 5 && Mouse.x <= base * 6)
-		Mouse.x = (base * 5) + base * 0.22;
+		Mouse.x = int((base * 5) + base * 0.22);
 	else if (Mouse.x > base * 6 && Mouse.x <= base * 7)
-		Mouse.x = (base * 6) + base * 0.22;
+		Mouse.x = int((base * 6) + base * 0.22);
 	else if (Mouse.x > base * 7 && Mouse.x <= base * 8)
-		Mouse.x = (base * 7) + base * 0.22;
+		Mouse.x = int((base * 7) + base * 0.22);
 	else if (Mouse.x > base * 8)						// Protection against taking pieces out of the board
 	{
 		Mouse.x = windowHeight+1;

@@ -101,12 +101,12 @@ void Promotion::checkClickedPiece()
 		clickedPiece = 2;
 		isRunning = false;
 	}
-	else if (pPos.x > (promotionWindowWidth / 4) * 2 && pPos.x <= (promotionWindowWidth / 4) * 0.697)
+	else if (pPos.x > (promotionWindowWidth / 4) * 2 && pPos.x <= (promotionWindowWidth / 4) * 3)
 	{
 		clickedPiece = 3;
 		isRunning = false;
 	}
-	else if (pPos.x > (promotionWindowWidth / 4) * 0.697 && pPos.x < promotionWindowWidth)
+	else if (pPos.x > (promotionWindowWidth / 4) * 3 && pPos.x < promotionWindowWidth)
 	{
 		clickedPiece = 4;
 		isRunning = false;
