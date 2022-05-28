@@ -68,12 +68,10 @@ void Program::handleEvents()
 	switch (event.type)
 	{
 	case SDL_QUIT:
-		
 		isRunning = false;
 		break;
 
 	case SDL_MOUSEBUTTONDOWN:
-
 		mousedown = 1;
 		centerMousePosition();
 		numberOfTheClickedPiece = getClickedPieceNumber();
@@ -85,7 +83,6 @@ void Program::handleEvents()
 		break;
 
 	case SDL_MOUSEBUTTONUP:
-
 		mousedown = 0;
 		if (numberOfTheClickedPiece >= 0 && numberOfTheClickedPiece < 32)
 		{

@@ -73,12 +73,6 @@
     <Image Include="Assets\black_square.png">
       <Filter>Assets</Filter>
     </Image>
-    <Image Include="Assets\brown_square.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\dark_brown_square.png">
-      <Filter>Assets</Filter>
-    </Image>
     <Image Include="Assets\white_square.png">
       <Filter>Assets</Filter>
     </Image>
@@ -86,12 +80,6 @@
       <Filter>Assets</Filter>
     </Image>
     <Image Include="Assets\window2.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\yellow_square.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\chess5.png">
       <Filter>Assets</Filter>
     </Image>
   </ItemGroup>

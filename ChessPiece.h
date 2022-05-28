@@ -34,7 +34,7 @@ public:
 	auto grab_srcR_y()	{ return srcR.y; }			// Returns srcR.y
 	auto grab_PositionBeforeMove() { return positionBeforeMove.x + positionBeforeMove.y; }
 
-	void setTex(){chessTex = TextureManager::LoadTexture("Assets/chess5.png", Program::renderer);}		// Adding an entire texture palette to chessTex
+	void setTex(){chessTex = TextureManager::LoadTexture("Assets/chess.png", Program::renderer);}		// Adding an entire texture palette to chessTex
 	void centerPiece();								// centering Piece
 	Pieces();
 

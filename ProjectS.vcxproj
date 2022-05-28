@@ -233,14 +233,10 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\black_square.png" />
-    <Image Include="Assets\brown_square.png" />
     <Image Include="Assets\brown_texture.png" />
     <Image Include="Assets\chess.png" />
-    <Image Include="Assets\chess5.png" />
-    <Image Include="Assets\dark_brown_square.png" />
     <Image Include="Assets\white_square.png" />
     <Image Include="Assets\window2.png" />
-    <Image Include="Assets\yellow_square.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

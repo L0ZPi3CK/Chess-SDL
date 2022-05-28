@@ -14,7 +14,6 @@ WindowTex::WindowTex()
 	dest.x = dest.y = 0;
 	dest.w = 560;
 	dest.h = 230;
-
 }
 
 void WindowTex::LoadWindow(int number)
