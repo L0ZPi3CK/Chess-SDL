@@ -1,5 +1,7 @@
 # Chess-SDL
- ![obraz](https://user-images.githubusercontent.com/84734341/158079083-a46e05cc-b00c-4e2b-8b6e-962a796b1d48.png)
+Wideo - https://youtu.be/eFuvRxTyyYc
+
+![obraz](https://user-images.githubusercontent.com/84734341/158079083-a46e05cc-b00c-4e2b-8b6e-962a796b1d48.png)
 
  
  
