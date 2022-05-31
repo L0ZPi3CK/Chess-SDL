@@ -1313,7 +1313,15 @@ void handlingPieceMovement(Pieces& Pic, Pieces AllPic[32], int toka)
 	else
 	{
 		// If player want to make 2 moves, restore old piece position
-		std::cout << "\nToken: " << moveToken;
+		if (moveToken == 1)
+		{
+			std::cout << "\nRuch Czarnego\n";
+		}
+		else
+		{
+			std::cout << "\nRuch Bialego\n";
+		}
+		
 		Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
 	}
 

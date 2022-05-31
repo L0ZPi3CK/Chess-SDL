@@ -1,2 +1,9 @@
-﻿  LINK : D:\Chess-SDL\x64\Debug\ProjectS.exe not found or not built by the last incremental link; performing full link
+﻿  ChessPiece.cpp
+  Main.cpp
+  Map.cpp
+  Promotion.cpp
+  TextureManager.cpp
+  Window2Tex.cpp
+  program.cpp
+  Generating Code...
   ProjectS.vcxproj -> D:\Chess-SDL\x64\Debug\ProjectS.exe

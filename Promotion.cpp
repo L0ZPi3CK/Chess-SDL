@@ -80,7 +80,7 @@ void Promotion::clean()
 {
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
-	std::cout << "promotion Cleaned" << std::endl;
+	//std::cout << "promotion Cleaned" << std::endl;
 }
 
 bool Promotion::running()

@@ -105,7 +105,7 @@ void Program::update()
 
 	if (clickedPiece != 0)
 	{
-		std::cout << "Clicked Piece: " << clickedPiece << std::endl;
+		//std::cout << "Clicked Piece: " << clickedPiece << std::endl;
 		switch (clickedPiece)
 		{
 		case 1:
@@ -152,7 +152,7 @@ void Program::clean()
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
 	SDL_Quit();
-	std::cout << "Chess Cleaned" << std::endl;
+	//std::cout << "Chess Cleaned" << std::endl;
 }
 
 bool Program::running()
