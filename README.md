@@ -1,8 +1,15 @@
 # Chess-SDL
- ![obraz](https://user-images.githubusercontent.com/84734341/158079083-a46e05cc-b00c-4e2b-8b6e-962a796b1d48.png)
+Wideo - https://youtu.be/eFuvRxTyyYc
+
+![obraz](https://user-images.githubusercontent.com/84734341/158079083-a46e05cc-b00c-4e2b-8b6e-962a796b1d48.png)
 
  
  
+<h1>To run the game just download the folder "Chess" and run ProjectS.exe</h1>
+
+ 
+<h1> If u want to build a solution follow the steps below </h1>
+
 First, after downloading the folder you have to make sure that path to SDL2 is correct
 Open .sln file, go to properties an check:
 1. VC++ Directories:  
