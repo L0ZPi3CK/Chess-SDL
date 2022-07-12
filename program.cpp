@@ -7,11 +7,8 @@
 SDL_Rect MousePos;
 SDL_MouseButtonEvent Mouse;
 
-// Adding figures
-Pieces Piece[32];
-
-// Adding map
-Map* map;
+Pieces Piece[32];		// Adding figures
+Map* map;				// Adding map
 
 // Renderer and Event
 SDL_Renderer* Program::renderer = nullptr;
@@ -25,7 +22,7 @@ Program::~Program()
 {
 }
 
-void Program::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen)\
+void Program::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen)
 {
 	int flags = 0;
 	if (fullscreen)
@@ -55,6 +52,7 @@ void Program::init(const char* title, int xpos, int ypos, int width, int height,
 	// Centers position for all pieces
 	for (numberOfTheClickedPiece = 0; numberOfTheClickedPiece < 32; numberOfTheClickedPiece++)
 	{
+		Piece[numberOfTheClickedPiece].set_PieceNumber(numberOfTheClickedPiece);
 		centerPiecePosition();
 	}
 
@@ -142,7 +140,6 @@ void Program::render()
 	{
 		SDL_RenderCopy(renderer, Piece[i].grab_chessTex(), Piece[i].grab_srcR(), Piece[i].grab_destR());
 	}
-
 
 	SDL_RenderPresent(renderer);
 }

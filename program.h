@@ -5,8 +5,8 @@
 #include "SDL_image.h"
 
 // Window resolution
-const int windowWidth = 800;
-const int windowHeight = 720;
+const int windowWidth = 800;		// 800
+const int windowHeight = 720;		// 720
 const int promotionWindowWidth = 560;
 const int promotionWindowHeight = 230;
 

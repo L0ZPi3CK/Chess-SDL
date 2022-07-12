@@ -1,5 +1,7 @@
 #include "ChessPiece.h"
 
+const int moveSize = windowHeight / 8;
+
 void Pieces::setColor(std::string col)
 {
 	color = col;
@@ -106,11 +108,535 @@ Pieces::Pieces()
 	chessTex = TextureManager::LoadTexture("none.png", Program::renderer);
 }
 
-void handlingPieceMovement(Pieces& Pic, Pieces AllPic[32], int toka)
+bool Pieces::movement_Pawn(Pieces AllPic[32], int& throw_y)
+{
+	int dest_x = 0;
+	int dest_y = 0;
+	int before_x = 0;
+	int before_y = 0;
+	int fieldSize = 0;
+
+	if (checkColor() == "White")
+	{
+		dest_x = grab_destR_x();
+		dest_y = grab_destR_y();
+		before_x = positionBeforeMove.x;
+		before_y = positionBeforeMove.y;
+		fieldSize = moveSize;
+	}
+	else if (checkColor() == "Black")
+	{
+		dest_x = -grab_destR_x();
+		dest_y = -grab_destR_y();
+		before_x = -positionBeforeMove.x;
+		before_y = -positionBeforeMove.y;
+		fieldSize = moveSize;
+	}
+
+	// If figure move backward or side -> Restore old position
+	// Else if figure move foward
+	if (dest_y <= before_y)
+	{
+		return false;
+	}
+	else
+	{
+		// If move foward by one or two but for the first time
+		// Else if the diagonal move
+		// Else -> Restore old position
+		if ((dest_y == before_y + fieldSize && dest_x == before_x) || (dest_y == before_y + fieldSize * 2 && dest_x == before_x && firstA == false))
+		{
+
+			// If move foward by one and come across black piece -> Set wrongMove on true		|| FOR WHITE PIECES
+			for (int i = 16; i < 32; i++)
+			{
+				if (dest_x == AllPic[i].grab_destR_x() && dest_y == AllPic[i].grab_destR_y())
+				{
+					return false;
+				}
+			}
+
+			// If move foward by one and come across white piece -> Set wrongMove on true		|| FOR BLACK PIECES
+			for (int i = 0; i < 16; i++)
+			{
+				if (dest_x == -AllPic[i].grab_destR_x() && dest_y == -AllPic[i].grab_destR_y() && checkColor() == "Black") 
+				{
+					return false;
+				}
+			}
+
+			// If move foward by two and "jumped" over black piece -> Set wrongMove on true		|| FOR WHITE PIECES
+			if (dest_y == before_y + fieldSize * 2)
+			{
+				for (int i = 0; i < 32; i++)
+				{
+					if (dest_y - fieldSize == AllPic[i].grab_destR_y() && dest_x == AllPic[i].grab_destR_x())
+					{
+						return false;
+					}
+				}
+			}
+
+			// If move foward by two and "jumped" over white piece -> Set wrongMove on true		|| FOR BLACK PIECES
+			if (dest_y == before_y + fieldSize * 2)
+			{
+				for (int i = 0; i < 32; i++)
+				{
+					if (dest_y - fieldSize == -AllPic[i].grab_destR_y() && dest_x == -AllPic[i].grab_destR_x() && checkColor() == "Black")
+					{
+						return false;
+					}
+				}
+			}
+
+			// If the piece hasn't made a wrong move -> set firstA on true, pass token to black pieces
+			firstA = true;
+			return true;
+
+		}
+		else if ((dest_x == before_x + fieldSize && dest_y == before_y + fieldSize) || (dest_x == before_x - fieldSize && dest_y == before_y + fieldSize))
+		{
+			if (checkColor() == "White")
+			{
+				// If yes -> Knock down a piece, Pass token to black pieces, Set firstA on true
+				for (int i = 16; i < 32; i++)
+				{
+					if (dest_x == AllPic[i].grab_destR_x() && dest_y == AllPic[i].grab_destR_y())
+					{
+						firstA = true;
+						AllPic[i].set_destR_w_h((int)((windowHeight / 8) * 0.61 / 2), (int)((windowHeight / 8) / 2));
+						AllPic[i].set_destR_x_y(grab_throw_x_White(), throw_y);
+						throw_y += (int)((windowHeight / 8) * 0.48);
+						return true;
+					}
+				}
+				// If piece don't came across black piece -> Restore old position
+				return false;
+			}
+			else if (checkColor() == "Black")
+			{
+				// If yes -> Knock down a piece, Pass token to black pieces, Set firstA on true
+				for (int i = 0; i < 16; i++)
+				{
+					if (dest_x == -AllPic[i].grab_destR_x() && dest_y == -AllPic[i].grab_destR_y() && checkColor() == "Black")
+					{
+						firstA = true;
+						AllPic[i].set_destR_w_h((int)((windowHeight / 8) * 0.61 / 2), (int)((windowHeight / 8) / 2));
+						AllPic[i].set_destR_x_y(grab_throw_x_Black(), throw_y);
+						throw_y += (int)((windowHeight / 8) * 0.48);
+						return true;
+					}
+				}
+				// If piece don't came across black piece -> Restore old position
+				return false;
+			}
+			else
+			{
+				return false;
+			}
+
+		}
+		else
+		{
+			return false;
+		}
+	}
+}
+bool Pieces::movement_Rook(Pieces AllPic[32], int& throw_y)
+{
+	// If moves horizontally or vertically
+			// Else -> Restore old position
+	if (grab_destR_x() == positionBeforeMove.x || grab_destR_y() == positionBeforeMove.y)
+	{
+		int samePos = 100;						// Variable for storing number of one of 32 pieces,
+										// 100 for default because it looks nice and piece with number 100 doesn't exist
+
+		// Check if piece don't came across any other piece horizontally or vertically
+		for (int i = 0; i < 32; i++)
+		{
+			// Up and right move
+			for (int cnt = moveSize; cnt <= moveSize * 7; cnt += moveSize)
+			{
+				if ((positionBeforeMove.x + cnt == AllPic[i].grab_destR_x() && positionBeforeMove.y == AllPic[i].grab_destR_y()) && grab_destR_x() > AllPic[i].grab_destR_x())
+				{
+					return false;
+				}
+
+				if ((positionBeforeMove.y + cnt == AllPic[i].grab_destR_y() && positionBeforeMove.x == AllPic[i].grab_destR_x()) && grab_destR_y() > AllPic[i].grab_destR_y())
+				{
+					return false;
+				}
+			}
+
+			// Down and left move
+			for (int cnt = moveSize * 7; cnt >= 0; cnt -= moveSize)
+			{
+				if ((positionBeforeMove.x - cnt == AllPic[i].grab_destR_x() && positionBeforeMove.y == AllPic[i].grab_destR_y()) && grab_destR_x() < AllPic[i].grab_destR_x())
+				{
+					return false;
+				}
+
+				if ((positionBeforeMove.y - cnt == AllPic[i].grab_destR_y() && positionBeforeMove.x == AllPic[i].grab_destR_x()) && grab_destR_y() < AllPic[i].grab_destR_y())
+				{
+					return false;
+				}
+			}
+
+			// If the player clicked but did not make a move
+			if (positionBeforeMove.x == grab_destR_x() && positionBeforeMove.y == grab_destR_y())
+			{
+				return false;
+			}
+		}
+
+		if (checkColor() == "White")
+		{
+			// Check if any black piece have the same position
+			for (int i = 16; i < 32; i++)
+			{
+				if (grab_destR_x() == AllPic[i].grab_destR_x() && grab_destR_y() == AllPic[i].grab_destR_y())
+				{
+					samePos = i;
+				}
+			}
+		}
+		else if (checkColor() == "Black")
+		{
+			// Check if any white piece have the same position
+			for (int i = 0; i < 16; i++)
+			{
+				if (grab_destR_x() == AllPic[i].grab_destR_x() && grab_destR_y() == AllPic[i].grab_destR_y())
+				{
+					samePos = i;
+				}
+			}
+		}
+
+
+		// If any piece have the same position and no collision is detected -> Knock down a piece, Pass token to black pieces
+		// Else if no elements with the same position are detected and no collision has occurred -> Pass token to black pieces
+		if (samePos != 100)
+		{
+			AllPic[samePos].set_destR_w_h((int)(((windowHeight / 8) * 0.61) / 2), (int)((windowHeight / 8) / 2));
+			if (checkColor() == "White")
+			{
+				AllPic[samePos].set_destR_x_y(grab_throw_x_White(), throw_y);
+			}
+			else if (checkColor() == "Black")
+			{
+				AllPic[samePos].set_destR_x_y(grab_throw_x_Black(), throw_y);
+			}
+
+			throw_y += (int)((windowHeight / 8) * 0.48);
+			return true;
+		}
+		else if (samePos == 100)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+
+	}
+	else
+	{
+		return false;
+	}
+}
+bool Pieces::movement_Knight(Pieces AllPic[32], int& throw_y)
+{
+	int samePos = 100;								// Variable for storing number of one of 32 pieces,
+													// 100 for default because it looks nice and piece with number 100 doesn't exist
+	if (checkColor() == "White")
+	{
+		// Check if any black piece have the same position
+		for (int i = 16; i < 32; i++)
+		{
+			if (grab_destR_x() == AllPic[i].grab_destR_x() && grab_destR_y() == AllPic[i].grab_destR_y())
+			{
+				samePos = i;
+			}
+		}
+	}
+	else if (checkColor() == "Black")
+	{
+		// Check if any black piece have the same position
+		for (int i = 0; i < 16; i++)
+		{
+			if (grab_destR_x() == AllPic[i].grab_destR_x() && grab_destR_y() == AllPic[i].grab_destR_y())
+			{
+				samePos = i;
+			}
+		}
+	}
+
+
+	// 1. If two up one right or one left				2. If two down one right or one left
+	// 3. If two to the right and one down or up		4. If two to the left and one down or up
+	if (grab_destR_y() == positionBeforeMove.y + moveSize * 2 && (grab_destR_x() == positionBeforeMove.x + moveSize || grab_destR_x() == positionBeforeMove.x - moveSize) ||
+		grab_destR_y() == positionBeforeMove.y - moveSize * 2 && (grab_destR_x() == positionBeforeMove.x + moveSize || grab_destR_x() == positionBeforeMove.x - moveSize) ||
+		grab_destR_x() == positionBeforeMove.x + moveSize * 2 && (grab_destR_y() == positionBeforeMove.y + moveSize || grab_destR_y() == positionBeforeMove.y - moveSize) ||
+		grab_destR_x() == positionBeforeMove.x - moveSize * 2 && (grab_destR_y() == positionBeforeMove.y + moveSize || grab_destR_y() == positionBeforeMove.y - moveSize))
+	{
+		// If the piece hasn't made a wrong move and piece is detected -> Knock down a piece, Pass token to black pieces
+		// Else If the piece hasn't made a wrong move -> Pass token to black pieces
+		// If the pawn has not moved correctly -> Restore old position
+		if (samePos != 100)
+		{
+			AllPic[samePos].set_destR_w_h((int)(((windowHeight / 8) * 0.61) / 2), (int)((windowHeight / 8) / 2));
+			if (checkColor() == "White")
+			{
+				AllPic[samePos].set_destR_x_y(grab_throw_x_White(), throw_y);
+			}
+			else if(checkColor() == "Black")
+			{
+				AllPic[samePos].set_destR_x_y(grab_throw_x_Black(), throw_y);
+			}
+			throw_y += (int)((windowHeight / 8) * 0.48);
+			return true;
+		}
+		else if (samePos == 100)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		return false;
+	}
+}
+bool Pieces::movement_Bishop(Pieces AllPic[32], int& throw_y)
+{
+	int samePos = 100;
+	int biasMove = 0;
+
+	// Check if piece move diagonally and set one of possible movements from 1 to 4		(If movement is not diagonally then set biasMove to 0)
+	// 1. Right down			2. Left up
+	// 3. Right up				4. Left down
+	for (int bias = moveSize; bias <= moveSize * 7; bias += moveSize)
+	{
+		if (grab_destR_x() == positionBeforeMove.x + bias && grab_destR_y() == positionBeforeMove.y + bias)
+		{
+			biasMove = 1;
+		}
+		else if (grab_destR_x() == positionBeforeMove.x - bias && grab_destR_y() == positionBeforeMove.y - bias)
+		{
+			biasMove = 2;
+		}
+		else if (grab_destR_x() == positionBeforeMove.x + bias && grab_destR_y() == positionBeforeMove.y - bias)
+		{
+			biasMove = 3;
+		}
+		else if (grab_destR_x() == positionBeforeMove.x - bias && grab_destR_y() == positionBeforeMove.y + bias)
+		{
+			biasMove = 4;
+		}
+	}
+
+	// If from pos.x to dest.x and from pos.y to dest.y there was a Piece (but excluding this piece) -> set biasMove to 0
+	if (biasMove == 1)
+	{
+		for (int srcX = positionBeforeMove.x, srcY = positionBeforeMove.y, destX = grab_destR_x(), destY = grab_destR_y(); srcX + moveSize <= destX && srcY + moveSize <= destY; srcX += moveSize, srcY += moveSize)
+		{
+			for (int i = 0; i < 32; i++)
+			{
+				//std::cout << "\nPionek[" << i << "]: " << std::endl;
+				//std::cout << "AllPic[" << i << "].pos.x: " << AllPic[i].grab_destR_x() << "\nAllPic[" << i << "].pos.y: " << AllPic[i].grab_destR_y();
+				//std::cout << "\nsrcX: " << srcX + moveSize << "\nsrcY: " << srcY + moveSize << std::endl;
+				if (AllPic[i].grab_destR_x() == srcX && AllPic[i].grab_destR_y() == srcY)
+				{
+					biasMove = 0;
+				}
+			}
+		}
+	}
+	else if (biasMove == 2)
+	{
+		for (int srcX = positionBeforeMove.x, srcY = positionBeforeMove.y, destX = grab_destR_x(), destY = grab_destR_y(); srcX - moveSize >= destX && srcY - moveSize >= destY; srcX -= moveSize, srcY -= moveSize)
+		{
+			for (int i = 0; i < 32; i++)
+			{
+				if (AllPic[i].grab_destR_x() == srcX && AllPic[i].grab_destR_y() == srcY)
+				{
+					biasMove = 0;
+				}
+			}
+		}
+	}
+	else if (biasMove == 3)
+	{
+		for (int srcX = positionBeforeMove.x, srcY = positionBeforeMove.y, destX = grab_destR_x(), destY = grab_destR_y(); srcX + moveSize <= destX && srcY - moveSize >= destY; srcX += moveSize, srcY -= moveSize)
+		{
+			for (int i = 0; i < 32; i++)
+			{
+				if (AllPic[i].grab_destR_x() == srcX && AllPic[i].grab_destR_y() == srcY)
+				{
+					biasMove = 0;
+				}
+			}
+		}
+	}
+	else if (biasMove == 4)
+	{
+		for (int srcX = positionBeforeMove.x, srcY = positionBeforeMove.y, destX = grab_destR_x(), destY = grab_destR_y(); srcX - moveSize >= destX && srcY + moveSize <= destY; srcX -= moveSize, srcY += moveSize)
+		{
+			for (int i = 0; i < 32; i++)
+			{
+				if (AllPic[i].grab_destR_x() == srcX && AllPic[i].grab_destR_y() == srcY)
+				{
+					biasMove = 0;
+				}
+			}
+		}
+	}
+	
+	if (checkColor() == "White")
+	{
+		// Check if any black piece have the same position
+		for (int i = 16; i < 32; i++)
+		{
+			if (grab_destR_x() == AllPic[i].grab_destR_x() && grab_destR_y() == AllPic[i].grab_destR_y())
+			{
+				samePos = i;
+			}
+		}
+	}
+	else if (checkColor() == "Black")
+	{
+		// Check if any white piece have the same position
+		for (int i = 0; i < 16; i++)
+		{
+			if (grab_destR_x() == AllPic[i].grab_destR_x() && grab_destR_y() == AllPic[i].grab_destR_y())
+			{
+				samePos = i;
+			}
+		}
+	}
+
+
+	// If piece didn't make diagonnaly move -> Restore old position
+	// If this piece did diagonally move and another piece is detected -> Knock down a piece, Pass token to black pieces
+	// If this piece did diagonally move -> Pass token to black pieces
+	if (biasMove == 0)
+	{
+		return false;
+	}
+	else if (biasMove != 0 && samePos != 100)
+	{
+		AllPic[samePos].set_destR_w_h((int)((windowHeight / 8) * 0.61) / 2, (int)((windowHeight / 8) / 2));
+		if (checkColor() == "White")
+		{
+			AllPic[samePos].set_destR_x_y(grab_throw_x_White(), throw_y);
+		}
+		else if (checkColor() == "Black")
+		{
+			AllPic[samePos].set_destR_x_y(grab_throw_x_Black(), throw_y);
+		}
+		throw_y += (int)((windowHeight / 8) * 0.48);
+		return true;
+	}
+	else if (biasMove != 0 && samePos == 100)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+bool Pieces::movement_Queen(Pieces AllPic[32], int& throw_y)
+{
+	if (movement_Bishop(AllPic,throw_y) == true)
+	{
+		return true;
+	}
+	else if (movement_Rook(AllPic, throw_y) == true)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+bool Pieces::movement_King(Pieces AllPic[32], int& throw_y)
+{
+	// If player is dumb and move on the same place -> return false
+	// Else if the piece moved one space in any direction
+	// Else -> Restore old position
+	if (grab_destR_x() == positionBeforeMove.x && grab_destR_y() == positionBeforeMove.y)
+	{
+		return false;
+	}
+	else if ((grab_destR_x() == positionBeforeMove.x + moveSize || grab_destR_x() == positionBeforeMove.x - moveSize || grab_destR_x() == positionBeforeMove.x) && (grab_destR_y() == positionBeforeMove.y + moveSize || grab_destR_y() == positionBeforeMove.y - moveSize || grab_destR_y() == positionBeforeMove.y))
+	{
+		int samePos = 100;
+
+		if (checkColor() == "White")
+		{
+			// Check if any black piece have the same position
+			for (int i = 16; i < 32; i++)
+			{
+				if (grab_destR_x() == AllPic[i].grab_destR_x() && grab_destR_y() == AllPic[i].grab_destR_y())
+				{
+					samePos = i;
+				}
+			}
+		}
+		else if (checkColor() == "Black")
+		{
+			// Check if any white piece have the same position
+			for (int i = 0; i < 16; i++)
+			{
+				if (grab_destR_x() == AllPic[i].grab_destR_x() && grab_destR_y() == AllPic[i].grab_destR_y())
+				{
+					samePos = i;
+				}
+			}
+		}
+
+		// If any piece have the same position -> Knock down a piece, Pass token to black pieces
+		// Else if move is correct but no elements with the same position are detected
+		if (samePos != 100)
+		{
+			AllPic[samePos].set_destR_w_h((int)(((windowHeight / 8) * 0.61) / 2), (int)((windowHeight / 8) / 2));
+			if (checkColor() == "White")
+			{
+				AllPic[samePos].set_destR_x_y(grab_throw_x_White(), throw_y);
+			}
+			else if (checkColor() == "Black")
+			{
+				AllPic[samePos].set_destR_x_y(grab_throw_x_Black(), throw_y);
+			}
+
+			throw_y += (int)((windowHeight / 8) * 0.48);
+			return true;
+		}
+		else if (samePos == 100)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void handlingPieceMovement(Pieces& Pic, Pieces AllPic[32])
 {
 	static int moveToken = 0;								// Turn-based figure movement 0/1
 	bool wrongColorMove = false;							// If moving a figure to a figure with the same color
-	int moveSize = windowHeight / 8;
 	static std::string tokenColor = "none";
 
 	// Reset token after pawn promotion
@@ -126,16 +652,15 @@ void handlingPieceMovement(Pieces& Pic, Pieces AllPic[32], int toka)
 	// Check the color of the figure and Token
 	if (Pic.checkColor() == "White" && moveToken == 0)
 	{
-		// Set a place for broken pieces
-		static int throw_x = (int)(windowHeight + windowHeight*0.022);
+		// Set a place for white broken pieces									
 		static int throw_y = 0;
 
 		// Check if white piece has moved to another white piece
 		for (int i = 0; i < 16; i++)							
 		{
-			if ((Pic.grab_destR_x() == AllPic[i].grab_destR_x() && Pic.grab_destR_y() == AllPic[i].grab_destR_y()) && Pic.grab_PositionBeforeMove() != AllPic[i].grab_PositionBeforeMove())
+			if ((Pic.grab_destR_x() == AllPic[i].grab_destR_x() && Pic.grab_destR_y() == AllPic[i].grab_destR_y()) && Pic.grab_PieceNumber() != AllPic[i].grab_PieceNumber())
 			{
-				Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
+				Pic.restoreOldPosition();
 				wrongColorMove = true;
 			}
 		}
@@ -146,572 +671,83 @@ void handlingPieceMovement(Pieces& Pic, Pieces AllPic[32], int toka)
 			// Check the figure name
 			if		(Pic.checkName() == "Pawn"	)		
 			{
-				// If figure move backward or side -> Restore old position
-				// Else if figure move foward
-				if (Pic.grab_destR_y() <= Pic.positionBeforeMove.y)			
+				if (Pic.movement_Pawn(AllPic, throw_y) == false)
 				{
-					Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
+					Pic.restoreOldPosition();
 				}
 				else
-				{	
-					// If move foward by one or two but for the first time
-					// Else if the diagonal move
-					// Else -> Restore old position
-					if ((Pic.grab_destR_y() == Pic.positionBeforeMove.y + moveSize && Pic.grab_destR_x() == Pic.positionBeforeMove.x) || (Pic.grab_destR_y() == Pic.positionBeforeMove.y + moveSize*2 && Pic.grab_destR_x() == Pic.positionBeforeMove.x && Pic.firstA == false))
-					{	
-						bool wrongMove = false;					// Check if piece did wrong move
-
-						// If move foward by one and come across black piece -> Set wrongMove on true
-						for (int i = 16; i < 32; i++)
-						{
-							if (Pic.grab_destR_x() == AllPic[i].grab_destR_x() && Pic.grab_destR_y() == AllPic[i].grab_destR_y())
-							{
-								wrongMove = true;
-							}
-						}
-
-						// If move foward by two and "jumped" over black piece -> Set wrongMove on true
-						if (Pic.grab_destR_y() == Pic.positionBeforeMove.y + moveSize*2)
-						{
-							for (int i = 0; i < 32; i++)
-							{
-								if (Pic.grab_destR_y() - moveSize == AllPic[i].grab_destR_y() && Pic.grab_destR_x() == AllPic[i].grab_destR_x())
-								{
-									wrongMove = true;
-								}
-							}
-						}
-						
-						// If the piece hasn't made a wrong move -> set firstA on true, pass token to black pieces
-						// Else if piece made a wrong move -> Restore old position
-						if (wrongMove == false)					
-						{
-							Pic.firstA = true;
-							moveToken = 1;
-						}						
-						else if (wrongMove == true)				
-						{
-							Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
-						}
-					}
-					else if ((Pic.grab_destR_x() == Pic.positionBeforeMove.x + moveSize && Pic.grab_destR_y() == Pic.positionBeforeMove.y + moveSize) || (Pic.grab_destR_x() == Pic.positionBeforeMove.x - moveSize && Pic.grab_destR_y() == Pic.positionBeforeMove.y + moveSize))
+				{
+					if (Pic.grab_destR_y() == moveSize * 7)		// For Pawn promotion
 					{
-						int broken = 0;							// Check if piece came across black piece
-
-						// If yes -> Knock down a piece, Pass token to black pieces, Set firstA on true
-						for (int i = 16; i < 32; i++)
-						{
-							if (Pic.grab_destR_x() == AllPic[i].grab_destR_x() && Pic.grab_destR_y() == AllPic[i].grab_destR_y())
-							{
-								Pic.firstA = true;
-								moveToken = 1;
-								AllPic[i].set_destR_w_h((int)((windowHeight/8)*0.61/2), (int)((windowHeight / 8) / 2));
-								AllPic[i].set_destR_x_y(throw_x, throw_y);
-								throw_y += (int)((windowHeight / 8) * 0.48);
-								broken = 1;
-								break;
-							}
-						}
-
-						// If piece hasn't came across black piece -> Restore old position
-						if (broken == 0)
-						{
-							Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
-						}
+						moveToken = 3;
+						tokenColor = "White";
 					}
 					else
 					{
-						Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
-					}					
-				}
-
-				if (Pic.grab_destR_y() == moveSize*7)
-				{
-					moveToken = 3;
-					tokenColor = "White";
+						moveToken = 1;
+					}
 				}
 			}
 			else if (Pic.checkName() == "Rook"	)
 			{
-				// If moves horizontally or vertically
-				// Else -> Restore old position
-				if (Pic.grab_destR_x() == Pic.positionBeforeMove.x || Pic.grab_destR_y() == Pic.positionBeforeMove.y)
+				if (Pic.movement_Rook(AllPic, throw_y) == false)
 				{
-					bool wrongMove = false;					// Check if piece did wrong move
-					int samePos = 100;						// Variable for storing number of one of 32 pieces,
-															// 100 for default because it looks nice and piece with number 100 doesn't exist
-
-					// Check if piece don't came across any other piece horizontally or vertically
-					for (int i = 0; i < 32; i++)
-					{
-						// Up and right move
-						for (int cnt = moveSize; cnt <= moveSize*7; cnt += moveSize)
-						{
-							if ((Pic.positionBeforeMove.x + cnt == AllPic[i].grab_destR_x() && Pic.positionBeforeMove.y == AllPic[i].grab_destR_y()) && Pic.grab_destR_x() > AllPic[i].grab_destR_x())
-							{
-								wrongMove = true;
-							}
-
-							if ((Pic.positionBeforeMove.y + cnt == AllPic[i].grab_destR_y() && Pic.positionBeforeMove.x == AllPic[i].grab_destR_x()) && Pic.grab_destR_y() > AllPic[i].grab_destR_y())
-							{
-								wrongMove = true;
-							}
-						}
-
-						// Down and left move
-						for (int cnt = moveSize * 7; cnt >= 0; cnt -= moveSize)
-						{
-							if ((Pic.positionBeforeMove.x - cnt == AllPic[i].grab_destR_x() && Pic.positionBeforeMove.y == AllPic[i].grab_destR_y()) && Pic.grab_destR_x() < AllPic[i].grab_destR_x())
-							{
-								wrongMove = true;
-							}
-
-							if ((Pic.positionBeforeMove.y - cnt == AllPic[i].grab_destR_y() && Pic.positionBeforeMove.x == AllPic[i].grab_destR_x()) && Pic.grab_destR_y() < AllPic[i].grab_destR_y())
-							{
-								wrongMove = true;
-							}
-						}
-						
-						// If the player clicked but did not make a move
-						if (Pic.positionBeforeMove.x == Pic.grab_destR_x() && Pic.positionBeforeMove.y == Pic.grab_destR_y())
-						{
-							wrongMove = true;
-						}
-
-						// If piece made a wrong move -> Restore old position, break loop
-						if (wrongMove == true)
-						{
-							Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
-							break;
-						}
-					}
-
-					// Check if any piece have the same position
-					for (int i = 16; i < 32; i++)
-					{
-						if (Pic.grab_destR_x() == AllPic[i].grab_destR_x() && Pic.grab_destR_y() == AllPic[i].grab_destR_y())
-						{
-							samePos = i;
-						}
-					}
-
-					// If any piece have the same position and no collision is detected -> Knock down a piece, Pass token to black pieces
-					// Else if no elements with the same position are detected and no collision has occurred -> Pass token to black pieces
-					if (samePos != 100 && wrongMove == false)
-					{
-						moveToken = 1;
-						AllPic[samePos].set_destR_w_h((int)(((windowHeight / 8) * 0.61)/2), (int)((windowHeight / 8) / 2));
-						AllPic[samePos].set_destR_x_y(throw_x, throw_y);
-						throw_y += (int)((windowHeight/8) * 0.48);
-					}
-					else if (samePos == 100 && wrongMove == false)
-					{
-						moveToken = 1;
-					}
+					Pic.restoreOldPosition();
 				}
 				else
 				{
-					Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
+					moveToken = 1;
 				}
 			}
 			else if (Pic.checkName() == "Knight")
 			{
-				bool wrongMove = true;							// Check if piece did correct move
-				int samePos = 100;								// Variable for storing number of one of 32 pieces,
-																// 100 for default because it looks nice and piece with number 100 doesn't exist
-
-				// 1. If two up one right or one left				2. If two down one right or one left
-				// 3. If two to the right and one down or up		4. If two to the left and one down or up
-				if (
-					Pic.grab_destR_y() == Pic.positionBeforeMove.y + moveSize*2 && (Pic.grab_destR_x() == Pic.positionBeforeMove.x + moveSize || Pic.grab_destR_x() == Pic.positionBeforeMove.x - moveSize)	||
-					Pic.grab_destR_y() == Pic.positionBeforeMove.y - moveSize*2 && (Pic.grab_destR_x() == Pic.positionBeforeMove.x + moveSize || Pic.grab_destR_x() == Pic.positionBeforeMove.x - moveSize)	||
-					Pic.grab_destR_x() == Pic.positionBeforeMove.x + moveSize*2 && (Pic.grab_destR_y() == Pic.positionBeforeMove.y + moveSize || Pic.grab_destR_y() == Pic.positionBeforeMove.y - moveSize)	||
-					Pic.grab_destR_x() == Pic.positionBeforeMove.x - moveSize*2 && (Pic.grab_destR_y() == Pic.positionBeforeMove.y + moveSize || Pic.grab_destR_y() == Pic.positionBeforeMove.y - moveSize)
-					)
+				if (Pic.movement_Knight(AllPic, throw_y) == false)
 				{
-					wrongMove = false;
+					Pic.restoreOldPosition();
 				}
-				
-				// Check if any piece have the same position
-				for (int i = 16; i < 32; i++)
-				{
-					if (Pic.grab_destR_x() == AllPic[i].grab_destR_x() && Pic.grab_destR_y() == AllPic[i].grab_destR_y())
-					{
-						samePos = i;
-					}
-				}
-				
-				// If the piece hasn't made a wrong move and piece is detected -> Knock down a piece, Pass token to black pieces
-				// Else If the piece hasn't made a wrong move -> Pass token to black pieces
-				// If the pawn has not moved correctly -> Restore old position
-				if (wrongMove == false && samePos != 100)
+				else
 				{
 					moveToken = 1;
-					AllPic[samePos].set_destR_w_h((int)(((windowHeight / 8) * 0.61) / 2), (int)((windowHeight / 8) / 2));
-					AllPic[samePos].set_destR_x_y(throw_x, throw_y);
-					throw_y += (int)((windowHeight / 8) * 0.48);
-				}
-				else if (wrongMove == false && samePos == 100)
-				{
-					moveToken = 1;
-				}
-				else if (wrongMove == true)
-				{
-					Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
 				}
 			}
 			else if (Pic.checkName() == "Bishop")
 			{
-				int samePos = 100;
-				int biasMove = 0;
-				
-				// Check if piece move diagonally and set one of possible movements from 1 to 4		(If movement is not diagonally then set biasMove to 0)
-				// 1. Right down			2. Left up
-				// 3. Right up				4. Left down
-				for (int bias = moveSize; bias <= moveSize*7; bias += moveSize)
+				if (Pic.movement_Bishop(AllPic, throw_y) == false)
 				{
-					if		(Pic.grab_destR_x() == Pic.positionBeforeMove.x + bias && Pic.grab_destR_y() == Pic.positionBeforeMove.y + bias)
-					{
-						biasMove = 1;
-					}
-					else if (Pic.grab_destR_x() == Pic.positionBeforeMove.x - bias && Pic.grab_destR_y() == Pic.positionBeforeMove.y - bias)
-					{	
-						biasMove = 2;
-					}
-					else if (Pic.grab_destR_x() == Pic.positionBeforeMove.x + bias && Pic.grab_destR_y() == Pic.positionBeforeMove.y - bias)
-					{
-						biasMove = 3;
-					}
-					else if (Pic.grab_destR_x() == Pic.positionBeforeMove.x - bias && Pic.grab_destR_y() == Pic.positionBeforeMove.y + bias)
-					{
-						biasMove = 4;
-					}
+					Pic.restoreOldPosition();
 				}
-
-				// If from pos.x to dest.x and from pos.y to dest.y there was a Piece (but excluding this piece) -> set biasMove to 0
-				if		(biasMove == 1)
-				{
-					for (int srcX = Pic.positionBeforeMove.x, srcY = Pic.positionBeforeMove.y, destX = Pic.grab_destR_x(), destY = Pic.grab_destR_y(); srcX + moveSize <= destX && srcY + moveSize <= destY; srcX += moveSize, srcY += moveSize)
-					{
-						for (int i = 0; i < 32; i++)
-						{
-							//std::cout << "\nPionek[" << i << "]: " << std::endl;
-							//std::cout << "AllPic[" << i << "].pos.x: " << AllPic[i].grab_destR_x() << "\nAllPic[" << i << "].pos.y: " << AllPic[i].grab_destR_y();
-							//std::cout << "\nsrcX: " << srcX + moveSize << "\nsrcY: " << srcY + moveSize << std::endl;
-							if (AllPic[i].grab_destR_x() == srcX && AllPic[i].grab_destR_y() == srcY)
-							{
-								biasMove = 0;
-							}
-						}
-					}
-				}
-				else if (biasMove == 2)
-				{
-					for (int srcX = Pic.positionBeforeMove.x, srcY = Pic.positionBeforeMove.y, destX = Pic.grab_destR_x(), destY = Pic.grab_destR_y(); srcX - moveSize >= destX && srcY - moveSize >= destY; srcX -= moveSize, srcY -= moveSize)
-					{
-						for (int i = 0; i < 32; i++)
-						{
-							if (AllPic[i].grab_destR_x() == srcX && AllPic[i].grab_destR_y() == srcY)
-							{
-								biasMove = 0;
-							}
-						}
-					}
-				}
-				else if (biasMove == 3)
-				{
-					for (int srcX = Pic.positionBeforeMove.x, srcY = Pic.positionBeforeMove.y, destX = Pic.grab_destR_x(), destY = Pic.grab_destR_y(); srcX + moveSize <= destX && srcY - moveSize >= destY; srcX += moveSize, srcY -= moveSize)
-					{
-						for (int i = 0; i < 32; i++)
-						{
-							if (AllPic[i].grab_destR_x() == srcX && AllPic[i].grab_destR_y() == srcY)
-							{
-								biasMove = 0;
-							}
-						}
-					}
-				}
-				else if (biasMove == 4)
-				{
-					for (int srcX = Pic.positionBeforeMove.x, srcY = Pic.positionBeforeMove.y, destX = Pic.grab_destR_x(), destY = Pic.grab_destR_y(); srcX - moveSize >= destX && srcY + moveSize <= destY; srcX -= moveSize, srcY += moveSize)
-					{
-						for (int i = 0; i < 32; i++)
-						{
-							if (AllPic[i].grab_destR_x() == srcX && AllPic[i].grab_destR_y() == srcY)
-							{
-								biasMove = 0;
-							}
-						}
-					}
-				}
-
-				// Check if any piece have the same position
-				for (int i = 16; i < 32; i++)
-				{
-					if (Pic.grab_destR_x() == AllPic[i].grab_destR_x() && Pic.grab_destR_y() == AllPic[i].grab_destR_y())
-					{
-						samePos = i;
-					}
-				}
-
-				// If piece didn't make diagonnaly move -> Restore old position
-				// If this piece did diagonally move and another piece is detected -> Knock down a piece, Pass token to black pieces
-				// If this piece did diagonally move -> Pass token to black pieces
-				if	(biasMove == 0)
-				{
-					Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
-				}
-				else if (biasMove != 0 && samePos != 100)
-				{
-					moveToken = 1;
-					AllPic[samePos].set_destR_w_h((int)((windowHeight / 8) * 0.61) / 2, (int)((windowHeight / 8) / 2));
-					AllPic[samePos].set_destR_x_y(throw_x, throw_y);
-					throw_y += (int)((windowHeight / 8) * 0.48);
-				}
-				else if (biasMove != 0 && samePos == 100)
+				else
 				{
 					moveToken = 1;
 				}
 			}
-			else if (Pic.checkName() == "Queen"	)
+			else if (Pic.checkName() == "Queen")
 			{
-			// Bishop movement ###########################################
-				
-				int biasMove = 0;
-				int samePos = 100;
-
-				// Check if piece move diagonally and set one of possible movements from 1 to 4		(If movement is not diagonally then set biasMove to 0)
-				// 1. Right down			2. Left up
-				// 3. Right up				4. Left down
-				for (int bias = moveSize; bias <= moveSize*7; bias += moveSize)
+				if (Pic.movement_Queen(AllPic, throw_y) == false)
 				{
-					if (Pic.grab_destR_x() == Pic.positionBeforeMove.x + bias && Pic.grab_destR_y() == Pic.positionBeforeMove.y + bias)
-					{
-						biasMove = 1;
-					}
-					else if (Pic.grab_destR_x() == Pic.positionBeforeMove.x - bias && Pic.grab_destR_y() == Pic.positionBeforeMove.y - bias)
-					{
-						biasMove = 2;
-					}
-					else if (Pic.grab_destR_x() == Pic.positionBeforeMove.x + bias && Pic.grab_destR_y() == Pic.positionBeforeMove.y - bias)
-					{
-						biasMove = 3;
-					}
-					else if (Pic.grab_destR_x() == Pic.positionBeforeMove.x - bias && Pic.grab_destR_y() == Pic.positionBeforeMove.y + bias)
-					{
-						biasMove = 4;
-					}
-				}
-
-				// If from pos.x to dest.x and from pos.y to dest.y there was a Piece (but excluding this piece) -> set biasMove to 0
-				if		(biasMove == 1)
-				{
-					for (int srcX = Pic.positionBeforeMove.x, srcY = Pic.positionBeforeMove.y, destX = Pic.grab_destR_x(), destY = Pic.grab_destR_y(); srcX + moveSize <= destX && srcY + moveSize <= destY; srcX += moveSize, srcY += moveSize)
-					{
-						for (int i = 0; i < 32; i++)
-						{
-							//std::cout << "\nPionek[" << i << "]: " << std::endl;
-							//std::cout << "AllPic[" << i << "].pos.x: " << AllPic[i].grab_destR_x() << "\nAllPic[" << i << "].pos.y: " << AllPic[i].grab_destR_y();
-							//std::cout << "\nsrcX: " << srcX + 115 << "\nsrcY: " << srcY + 115 << std::endl;
-							if (AllPic[i].grab_destR_x() == srcX && AllPic[i].grab_destR_y() == srcY)
-							{
-								biasMove = 0;
-							}
-						}
-					}
-				}
-				else if (biasMove == 2)
-				{
-					for (int srcX = Pic.positionBeforeMove.x, srcY = Pic.positionBeforeMove.y, destX = Pic.grab_destR_x(), destY = Pic.grab_destR_y(); srcX - moveSize >= destX && srcY - moveSize >= destY; srcX -= moveSize, srcY -= moveSize)
-					{
-						for (int i = 0; i < 32; i++)
-						{
-							if (AllPic[i].grab_destR_x() == srcX && AllPic[i].grab_destR_y() == srcY)
-							{
-								biasMove = 0;
-							}
-						}
-					}
-				}
-				else if (biasMove == 3)
-				{
-					for (int srcX = Pic.positionBeforeMove.x, srcY = Pic.positionBeforeMove.y, destX = Pic.grab_destR_x(), destY = Pic.grab_destR_y(); srcX + moveSize <= destX && srcY - moveSize >= destY; srcX += moveSize, srcY -= moveSize)
-					{
-						for (int i = 0; i < 32; i++)
-						{
-							if (AllPic[i].grab_destR_x() == srcX && AllPic[i].grab_destR_y() == srcY)
-							{
-								biasMove = 0;
-							}
-						}
-					}
-				}
-				else if (biasMove == 4)
-				{
-					for (int srcX = Pic.positionBeforeMove.x, srcY = Pic.positionBeforeMove.y, destX = Pic.grab_destR_x(), destY = Pic.grab_destR_y(); srcX - moveSize >= destX && srcY + moveSize <= destY; srcX -= moveSize, srcY += moveSize)
-					{
-						for (int i = 0; i < 32; i++)
-						{
-							if (AllPic[i].grab_destR_x() == srcX && AllPic[i].grab_destR_y() == srcY)
-							{
-								biasMove = 0;
-							}
-						}
-					}
-				}
-
-				// Check if any piece have the same position
-				for (int i = 16; i < 32; i++)
-				{
-					if (Pic.grab_destR_x() == AllPic[i].grab_destR_x() && Pic.grab_destR_y() == AllPic[i].grab_destR_y())
-					{
-						samePos = i;
-					}
-				}
-			
-				// If this piece did diagonally move and another piece is detected -> Knock down a piece, Pass token to black pieces
-				// Else if this piece did diagonally move -> Pass token to black pieces
-				if	(biasMove != 0 && samePos != 100)
-				{
-					moveToken = 1;
-					AllPic[samePos].set_destR_w_h((int)(((windowHeight / 8) * 0.61) / 2), (int)((windowHeight / 8) / 2));
-					AllPic[samePos].set_destR_x_y(throw_x, throw_y);
-					throw_y += (int)((windowHeight / 8) * 0.48);
-				}
-				else if (biasMove != 0 && samePos == 100)
-				{
-					moveToken = 1;
-				}
-
-			// Rook movement #############################################
-
-				// Else if Rook movement
-				// Else -> Restore old position
-				else if (Pic.grab_destR_x() == Pic.positionBeforeMove.x || Pic.grab_destR_y() == Pic.positionBeforeMove.y)
-				{
-					bool wrongMove = false;
-					int samePos = 100;
-
-					// Check if piece don't came across any other piece horizontally or vertically
-					for (int i = 0; i < 32; i++)
-					{
-						// Up and right move
-						for (int cnt = moveSize; cnt <= moveSize*7; cnt += moveSize)
-						{
-							if ((Pic.positionBeforeMove.x + cnt == AllPic[i].grab_destR_x() && Pic.positionBeforeMove.y == AllPic[i].grab_destR_y()) && Pic.grab_destR_x() > AllPic[i].grab_destR_x())
-							{
-								wrongMove = true;
-							}
-
-							if ((Pic.positionBeforeMove.y + cnt == AllPic[i].grab_destR_y() && Pic.positionBeforeMove.x == AllPic[i].grab_destR_x()) && Pic.grab_destR_y() > AllPic[i].grab_destR_y())
-							{
-								wrongMove = true;
-							}
-						}
-
-						// Down and left move
-						for (int cnt = 805; cnt >= 0; cnt -= 115)
-						{
-							if ((Pic.positionBeforeMove.x - cnt == AllPic[i].grab_destR_x() && Pic.positionBeforeMove.y == AllPic[i].grab_destR_y()) && Pic.grab_destR_x() < AllPic[i].grab_destR_x())
-							{
-								wrongMove = true;
-							}
-
-							if ((Pic.positionBeforeMove.y - cnt == AllPic[i].grab_destR_y() && Pic.positionBeforeMove.x == AllPic[i].grab_destR_x()) && Pic.grab_destR_y() < AllPic[i].grab_destR_y())
-							{
-								wrongMove = true;
-							}
-						}
-
-						// If the player clicked but did not make a move
-						if (Pic.positionBeforeMove.x == Pic.grab_destR_x() && Pic.positionBeforeMove.y == Pic.grab_destR_y())
-						{
-							wrongMove = true;
-						}
-
-						// If piece made a wrong move -> Restore old position, break loop
-						if (wrongMove == true)
-						{
-							Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
-							break;
-						}
-					}
-
-					// Check if any piece have the same position
-					for (int i = 16; i < 32; i++)
-					{
-						if (Pic.grab_destR_x() == AllPic[i].grab_destR_x() && Pic.grab_destR_y() == AllPic[i].grab_destR_y())
-						{
-							samePos = i;
-						}
-					}
-
-					// If any piece have the same position and no collision is detected -> Knock down a piece, Pass token to black pieces
-					// Else if no elements with the same position are detected and no collision has occurred -> Pass token to black pieces
-					if (samePos != 100 && wrongMove == false)
-					{
-						moveToken = 1;
-						AllPic[samePos].set_destR_w_h((int)(((windowHeight / 8) * 0.61) / 2), (int)((windowHeight / 8) / 2));
-						AllPic[samePos].set_destR_x_y(throw_x, throw_y);
-						throw_y += (int)((windowHeight / 8) * 0.48);
-					}
-					else if (samePos == 100 && wrongMove == false)
-					{
-						moveToken = 1;
-					}
+					Pic.restoreOldPosition();
 				}
 				else
 				{
-					Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
+					moveToken = 1;
 				}
 			}
 			else if (Pic.checkName() == "King"	)	
 			{
-				// If the piece moved one space in any direction
-				// Else -> Restore old position
-				if ((Pic.grab_destR_x() == Pic.positionBeforeMove.x + moveSize || Pic.grab_destR_x() == Pic.positionBeforeMove.x - moveSize || Pic.grab_destR_x() == Pic.positionBeforeMove.x) && (Pic.grab_destR_y() == Pic.positionBeforeMove.y + moveSize || Pic.grab_destR_y() == Pic.positionBeforeMove.y - moveSize || Pic.grab_destR_y() == Pic.positionBeforeMove.y))
+				if (Pic.movement_King(AllPic, throw_y) == false)
 				{
-					int samePos = 100;
-
-					// Check if any piece have the same position
-					for (int i = 16; i < 32; i++)
-					{
-						if (Pic.grab_destR_x() == AllPic[i].grab_destR_x() && Pic.grab_destR_y() == AllPic[i].grab_destR_y())
-						{
-							samePos = i;
-						}
-					}
-
-					// If any piece have the same position -> Knock down a piece, Pass token to black pieces
-					// Else if move is correct but no elements with the same position are detected
-					if (samePos != 100)
-					{
-						moveToken = 1;
-						AllPic[samePos].set_destR_w_h((int)(((windowHeight / 8) * 0.61) / 2), (int)((windowHeight / 8) / 2));
-						AllPic[samePos].set_destR_x_y(throw_x, throw_y);
-						throw_y += (int)((windowHeight / 8) * 0.48);
-					}
-					else if (samePos == 100)
-					{
-						moveToken = 1;
-					}
-
-					// If player is dumb and move on the same place -> don't pass token to black pieces
-					if (Pic.grab_destR_x() == Pic.positionBeforeMove.x && Pic.grab_destR_y() == Pic.positionBeforeMove.y)
-					{
-						moveToken = 0;
-					}
+					Pic.restoreOldPosition();
 				}
 				else
 				{
-					Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
+					moveToken = 1;
 				}
 			}
 
 			// If moving a figure off the board then restore old position
 			if (Pic.grab_destR_x() > ((moveSize*7) + ((windowHeight/8)*0,22)+7))
 			{
-				Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
+				Pic.restoreOldPosition();
 				moveToken = 0;
 			}
 		}
@@ -719,16 +755,15 @@ void handlingPieceMovement(Pieces& Pic, Pieces AllPic[32], int toka)
 	}
 	else if (Pic.checkColor() == "Black" && moveToken == 1)
 	{
-		// Set a place for broken pieces
-		static int throw_x = (int)(windowHeight + windowHeight*0.066);
+		// Set a place for black broken pieces
 		static int throw_y = 0;
 
 		// Check if black piece has moved to another black piece
 		for (int i = 16; i < 32; i++)
 		{
-			if ((Pic.grab_destR_x() == AllPic[i].grab_destR_x() && Pic.grab_destR_y() == AllPic[i].grab_destR_y()) && Pic.grab_PositionBeforeMove() != AllPic[i].grab_PositionBeforeMove())
+			if ((Pic.grab_destR_x() == AllPic[i].grab_destR_x() && Pic.grab_destR_y() == AllPic[i].grab_destR_y()) && Pic.grab_PieceNumber() != AllPic[i].grab_PieceNumber())
 			{
-				Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
+				Pic.restoreOldPosition();
 				wrongColorMove = true;
 			}
 		}
@@ -739,565 +774,76 @@ void handlingPieceMovement(Pieces& Pic, Pieces AllPic[32], int toka)
 			// Check the figure name
 			if		(Pic.checkName() == "Pawn"	)
 			{
-				// If figure move backward or side -> Restore old position
-				// Else if figure move foward
-				if (Pic.grab_destR_y() >= Pic.positionBeforeMove.y)
+				if (Pic.movement_Pawn(AllPic, throw_y) == false)
 				{
-					Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
+					Pic.restoreOldPosition();
 				}
 				else
-				{		
-					// If move foward by one or two but for the first time
-					// Else if the diagonal move
-					// If the piece has made any other move
-					if ((Pic.grab_destR_y() == Pic.positionBeforeMove.y - moveSize && Pic.grab_destR_x() == Pic.positionBeforeMove.x) || (Pic.grab_destR_y() == Pic.positionBeforeMove.y - moveSize*2 && Pic.grab_destR_x() == Pic.positionBeforeMove.x && Pic.firstA == false))
+				{
+					if (Pic.grab_destR_y() == moveSize * 7)		// For Pawn promotion
 					{
-						bool wrongMove = false;					// Check if piece did wrong move
-
-						// If move foward by one and come across black piece -> Set wrongMove on true
-						for (int i = 0; i < 16; i++)
-						{
-							if (Pic.grab_destR_x() == AllPic[i].grab_destR_x() && Pic.grab_destR_y() == AllPic[i].grab_destR_y())
-							{
-								wrongMove = true;
-							}
-						}
-
-						// If move foward by two and "jumped" over black piece -> Set wrongMove on true
-						if (Pic.grab_destR_y() == Pic.positionBeforeMove.y - moveSize*2)
-						{
-							for (int i = 0; i < 32; i++)
-							{
-								if (Pic.grab_destR_y() + moveSize == AllPic[i].grab_destR_y() && Pic.grab_destR_x() == AllPic[i].grab_destR_x())
-								{
-									wrongMove = true;
-								}
-							}
-						}
-
-						// If the piece hasn't made a wrong move -> set firstA on true, pass token to black pieces
-						// Else if piece made a wrong move -> Restore old position
-						if (wrongMove == false)
-						{
-							moveToken = 0;
-							Pic.firstA = true;
-						}
-						else if (wrongMove == true)
-						{
-							Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
-						}
-					}	
-					else if ((Pic.grab_destR_x() == Pic.positionBeforeMove.x + moveSize && Pic.grab_destR_y() == Pic.positionBeforeMove.y - moveSize) || (Pic.grab_destR_x() == Pic.positionBeforeMove.x - moveSize && Pic.grab_destR_y() == Pic.positionBeforeMove.y - moveSize))
-					{
-						int broken = 0;							// Check if piece came across black piece
-
-						// If yes -> Knock down a piece, Pass token to black pieces, Set firstA on true
-						for (int i = 0; i < 16; i++)
-						{
-							if (Pic.grab_destR_x() == AllPic[i].grab_destR_x() && Pic.grab_destR_y() == AllPic[i].grab_destR_y())
-							{
-								Pic.firstA = true;
-								moveToken = 0;
-								AllPic[i].set_destR_w_h((int)(((windowHeight / 8) * 0.61) / 2), (int)(windowHeight / 8) / 2);
-								AllPic[i].set_destR_x_y(throw_x, throw_y);
-								throw_y += (int)((windowHeight / 8) * 0.48);
-								broken = 1;
-								break;
-							}
-						}
-
-						// If piece hasn't came across black piece -> Restore old position
-						if (broken == 0)
-						{
-							Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
-						}
+						moveToken = 3;
+						tokenColor = "White";
 					}
 					else
 					{
-						Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
+						moveToken = 0;
 					}
-				}
-
-				if (Pic.grab_destR_y() == 0)
-				{
-					moveToken = 3;
-					tokenColor = "Black";
 				}
 			}
 			else if (Pic.checkName() == "Rook"	)					// Wieza
 			{
-				// If moves horizontally or vertically
-				// Else -> Restore old position
-				if (Pic.grab_destR_x() == Pic.positionBeforeMove.x || Pic.grab_destR_y() == Pic.positionBeforeMove.y)
+				if (Pic.movement_Rook(AllPic, throw_y) == false)
 				{
-					bool wrongMove = false;					// Check if piece did wrong move
-					int samePos = 100;						// Variable for storing number of one of 32 pieces,
-															// 100 for default because it looks nice and piece with number 100 doesn't exist
-
-					// Check if piece don't came across any other piece horizontally or vertically
-					for (int i = 0; i < 32; i++)
-					{
-						// Up and right move 
-						for (int cnt = moveSize; cnt <= moveSize*7; cnt += moveSize)
-						{
-							if ((Pic.positionBeforeMove.x + cnt == AllPic[i].grab_destR_x() && Pic.positionBeforeMove.y == AllPic[i].grab_destR_y()) && Pic.grab_destR_x() > AllPic[i].grab_destR_x())
-							{
-								wrongMove = true;
-							}
-
-							if ((Pic.positionBeforeMove.y + cnt == AllPic[i].grab_destR_y() && Pic.positionBeforeMove.x == AllPic[i].grab_destR_x()) && Pic.grab_destR_y() > AllPic[i].grab_destR_y())
-							{
-								wrongMove = true;
-							}
-						}
-
-						// Down and left move
-						for (int cnt = moveSize*7; cnt >= 0; cnt -= moveSize)
-						{
-							if ((Pic.positionBeforeMove.x - cnt == AllPic[i].grab_destR_x() && Pic.positionBeforeMove.y == AllPic[i].grab_destR_y()) && Pic.grab_destR_x() < AllPic[i].grab_destR_x())
-							{
-								wrongMove = true;
-							}
-
-							if ((Pic.positionBeforeMove.y - cnt == AllPic[i].grab_destR_y() && Pic.positionBeforeMove.x == AllPic[i].grab_destR_x()) && Pic.grab_destR_y() < AllPic[i].grab_destR_y())
-							{
-								wrongMove = true;
-							}
-						}
-
-						// If the player clicked but did not make a move
-						if (Pic.positionBeforeMove.x == Pic.grab_destR_x() && Pic.positionBeforeMove.y == Pic.grab_destR_y())
-						{
-							wrongMove = true;
-						}
-
-						// If piece made a wrong move -> Restore old position, break loop
-						if (wrongMove == true)
-						{
-							Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
-							break;
-						}
-					}
-
-					// Check if any piece have the same position
-					for (int i = 0; i < 16; i++)
-					{
-						if (Pic.grab_destR_x() == AllPic[i].grab_destR_x() && Pic.grab_destR_y() == AllPic[i].grab_destR_y())
-						{
-							samePos = i;
-						}
-					}
-
-					// If any piece have the same position and no collision is detected -> Knock down a piece, Pass token to black pieces
-					// Else if no elements with the same position are detected and no collision has occurred -> Pass token to black pieces
-					if (samePos != 100 && wrongMove != true)
-					{
-						moveToken = 0;
-						AllPic[samePos].set_destR_w_h((int)(((windowHeight / 8) * 0.61) / 2), (int)((windowHeight / 8) / 2));
-						AllPic[samePos].set_destR_x_y(throw_x, throw_y);
-						throw_y += (int)((windowHeight / 8) * 0.48);
-					}
-					else if (samePos == 100 && wrongMove != true)
-					{
-						moveToken = 0;
-					}
+					Pic.restoreOldPosition();
 				}
 				else
 				{
-					Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
+					moveToken = 0;
 				}
 			}
 			else if (Pic.checkName() == "Knight")
 			{
-				bool wrongMove = true;							// Check if piece did correct move
-				int samePos = 100;								// Variable for storing number of one of 32 pieces,
-																// 100 for default because it looks nice and piece with number 100 doesn't exist
-																
-				// 1. If two up one right or one left				2. If two down one right or one left
-				// 3. If two to the right and one down or up		4. If two to the left and one down or up
-				if (
-					Pic.grab_destR_y() == Pic.positionBeforeMove.y + moveSize * 2 && (Pic.grab_destR_x() == Pic.positionBeforeMove.x + moveSize || Pic.grab_destR_x() == Pic.positionBeforeMove.x - moveSize)	||
-					Pic.grab_destR_y() == Pic.positionBeforeMove.y - moveSize * 2 && (Pic.grab_destR_x() == Pic.positionBeforeMove.x + moveSize || Pic.grab_destR_x() == Pic.positionBeforeMove.x - moveSize)	||
-					Pic.grab_destR_x() == Pic.positionBeforeMove.x + moveSize * 2 && (Pic.grab_destR_y() == Pic.positionBeforeMove.y + moveSize || Pic.grab_destR_y() == Pic.positionBeforeMove.y - moveSize)	||
-					Pic.grab_destR_x() == Pic.positionBeforeMove.x - moveSize * 2 && (Pic.grab_destR_y() == Pic.positionBeforeMove.y + moveSize || Pic.grab_destR_y() == Pic.positionBeforeMove.y - moveSize)
-					)
-					{
-						wrongMove = false;
-					}
-
-				// Check if any piece have the same position
-				for (int i = 0; i < 16; i++)
+				if (Pic.movement_Knight(AllPic, throw_y) == false)
 				{
-					if (Pic.grab_destR_x() == AllPic[i].grab_destR_x() && Pic.grab_destR_y() == AllPic[i].grab_destR_y())
-					{
-						samePos = i;
-					}
+					Pic.restoreOldPosition();
 				}
-	
-				// If the piece hasn't made a wrong move and no piece is detected -> Knock down a piece, Pass token to black pieces
-				// Else If the piece hasn't made a wrong move -> Pass token to black pieces
-				// If the pawn has not moved correctly -> Restore old position
-				if (wrongMove == false && samePos != 100)
+				else
 				{
 					moveToken = 0;
-					AllPic[samePos].set_destR_w_h((int)(((windowHeight / 8) * 0.61) / 2), (int)((windowHeight / 8) / 2));
-					AllPic[samePos].set_destR_x_y(throw_x, throw_y);
-					throw_y += (int)((windowHeight / 8) * 0.48);
-				}
-				else if (wrongMove == false && samePos == 100)
-				{
-					moveToken = 0;
-				}
-				else if (wrongMove == true)
-				{
-					Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
 				}
 			}
 			else if (Pic.checkName() == "Bishop")
 			{
-				int samePos = 100;
-				int biasMove = 0;
-
-				// Check if piece move diagonally and set one of possible movements from 1 to 4		(If movement is not diagonally then set biasMove to 0)
-				// 1. Right down			2. Left up
-				// 3. Right up				4. Left down
-				for (int bias = moveSize; bias <= moveSize*7; bias += moveSize)
+				if (Pic.movement_Bishop(AllPic, throw_y) == false)
 				{
-					if (Pic.grab_destR_x() == Pic.positionBeforeMove.x + bias && Pic.grab_destR_y() == Pic.positionBeforeMove.y + bias)
-					{
-						biasMove = 1;
-					}
-					else if (Pic.grab_destR_x() == Pic.positionBeforeMove.x - bias && Pic.grab_destR_y() == Pic.positionBeforeMove.y - bias)
-					{
-						biasMove = 2;
-					}
-					else if (Pic.grab_destR_x() == Pic.positionBeforeMove.x + bias && Pic.grab_destR_y() == Pic.positionBeforeMove.y - bias)
-					{
-						biasMove = 3;
-					}
-					else if (Pic.grab_destR_x() == Pic.positionBeforeMove.x - bias && Pic.grab_destR_y() == Pic.positionBeforeMove.y + bias)
-					{
-						biasMove = 4;
-					}
+					Pic.restoreOldPosition();
 				}
-
-				// If from pos.x to dest.x and from pos.y to dest.y there was a Piece (but excluding this piece) -> set biasMove to 0
-				if (biasMove == 1)
-				{
-					for (int srcX = Pic.positionBeforeMove.x , srcY = Pic.positionBeforeMove.y, destX = Pic.grab_destR_x(), destY = Pic.grab_destR_y();srcX+ moveSize <= destX && srcY+ moveSize <= destY ;srcX += moveSize, srcY += moveSize)
-					{
-						for (int i = 0; i < 32; i++)
-						{
-							//std::cout << "\nPionek[" << i << "]: " << std::endl;
-							//std::cout << "AllPic[" << i << "].pos.x: " << AllPic[i].grab_destR_x() << "\nAllPic[" << i << "].pos.y: " << AllPic[i].grab_destR_y();
-							//std::cout << "\nsrcX: " << srcX + 115 << "\nsrcY: " << srcY + 115 << std::endl;
-							if (AllPic[i].grab_destR_x() == srcX && AllPic[i].grab_destR_y() == srcY)
-							{
-								biasMove = 0;
-							}
-						}
-					}
-				}
-				else if (biasMove == 2)
-				{
-					for (int srcX = Pic.positionBeforeMove.x, srcY = Pic.positionBeforeMove.y, destX = Pic.grab_destR_x(), destY = Pic.grab_destR_y(); srcX - moveSize >= destX && srcY - moveSize >= destY; srcX -= moveSize, srcY -= moveSize)
-					{
-						for (int i = 0; i < 32; i++)
-						{
-							if (AllPic[i].grab_destR_x() == srcX && AllPic[i].grab_destR_y() == srcY)
-							{
-								biasMove = 0;
-							}
-						}
-					}
-				}
-				else if (biasMove == 3)
-				{
-					for (int srcX = Pic.positionBeforeMove.x, srcY = Pic.positionBeforeMove.y, destX = Pic.grab_destR_x(), destY = Pic.grab_destR_y(); srcX + moveSize <= destX && srcY - moveSize >= destY; srcX += moveSize, srcY -= moveSize)
-					{
-						for (int i = 0; i < 32; i++)
-						{
-							if (AllPic[i].grab_destR_x() == srcX && AllPic[i].grab_destR_y() == srcY)
-							{
-								biasMove = 0;
-							}
-						}
-					}
-				}
-				else if (biasMove == 4)
-				{
-					for (int srcX = Pic.positionBeforeMove.x, srcY = Pic.positionBeforeMove.y, destX = Pic.grab_destR_x(), destY = Pic.grab_destR_y(); srcX - moveSize >= destX && srcY + moveSize <= destY; srcX -= moveSize, srcY += moveSize)
-					{
-						for (int i = 0; i < 32; i++)
-						{
-							if (AllPic[i].grab_destR_x() == srcX && AllPic[i].grab_destR_y() == srcY)
-							{
-								biasMove = 0;
-							}
-						}
-					}
-				}
-			
-				// Check if any piece have the same position
-				for (int i = 0; i < 16; i++)
-				{
-					if (Pic.grab_destR_x() == AllPic[i].grab_destR_x() && Pic.grab_destR_y() == AllPic[i].grab_destR_y())
-					{
-						samePos = i;
-					}
-				}
-
-				// If piece didn't make diagonnaly move -> Restore old position
-				// If this piece did diagonally move and another piece is detected -> Knock down a piece, Pass token to black pieces
-				// If this piece did diagonally move -> Pass token to black pieces
-				if (biasMove == 0)
-				{
-					Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
-				}
-				else if(biasMove != 0 && samePos != 100)
-				{
-					moveToken = 0;
-					AllPic[samePos].set_destR_w_h((int)(((windowHeight / 8) * 0.61) / 2), (int)((windowHeight / 8) / 2));
-					AllPic[samePos].set_destR_x_y(throw_x, throw_y);
-					throw_y += (int)((windowHeight / 8) * 0.48);
-				}
-				else if (biasMove != 0 && samePos == 100)
+				else
 				{
 					moveToken = 0;
 				}
 			}
 			else if (Pic.checkName() == "Queen"	)				// Krolowa
 			{
-			// Bishop movement ###########################################
-
-				int biasMove = 0;
-				int samePos = 100;
-
-				// Check if piece move diagonally and set one of possible movements from 1 to 4		(If movement is not diagonally then set biasMove to 0)
-				// 1. Right down			2. Left up
-				// 3. Right up				4. Left down
-				for (int bias = moveSize; bias <= moveSize*7; bias += moveSize)
+				if (Pic.movement_Queen(AllPic, throw_y) == false)
 				{
-					if (Pic.grab_destR_x() == Pic.positionBeforeMove.x + bias && Pic.grab_destR_y() == Pic.positionBeforeMove.y + bias)
-					{
-						biasMove = 1;
-					}
-					else if (Pic.grab_destR_x() == Pic.positionBeforeMove.x - bias && Pic.grab_destR_y() == Pic.positionBeforeMove.y - bias)
-					{
-						biasMove = 2;
-					}
-					else if (Pic.grab_destR_x() == Pic.positionBeforeMove.x + bias && Pic.grab_destR_y() == Pic.positionBeforeMove.y - bias)
-					{
-						biasMove = 3;
-					}
-					else if (Pic.grab_destR_x() == Pic.positionBeforeMove.x - bias && Pic.grab_destR_y() == Pic.positionBeforeMove.y + bias)
-					{
-						biasMove = 4;
-					}
-				}
-
-				// If from pos.x to dest.x and from pos.y to dest.y there was a Piece (but excluding this piece) -> set biasMove to 0
-				if (biasMove == 1)
-				{
-					for (int srcX = Pic.positionBeforeMove.x, srcY = Pic.positionBeforeMove.y, destX = Pic.grab_destR_x(), destY = Pic.grab_destR_y(); srcX + moveSize <= destX && srcY + moveSize <= destY; srcX += moveSize, srcY += moveSize)
-					{
-						for (int i = 0; i < 32; i++)
-						{
-							//std::cout << "\nPionek[" << i << "]: " << std::endl;
-							//std::cout << "AllPic[" << i << "].pos.x: " << AllPic[i].grab_destR_x() << "\nAllPic[" << i << "].pos.y: " << AllPic[i].grab_destR_y();
-							//std::cout << "\nsrcX: " << srcX + 115 << "\nsrcY: " << srcY + 115 << std::endl;
-							if (AllPic[i].grab_destR_x() == srcX && AllPic[i].grab_destR_y() == srcY)
-							{
-								biasMove = 0;
-							}
-						}
-					}
-				}
-				else if (biasMove == 2)
-				{
-					for (int srcX = Pic.positionBeforeMove.x, srcY = Pic.positionBeforeMove.y, destX = Pic.grab_destR_x(), destY = Pic.grab_destR_y(); srcX - moveSize >= destX && srcY - moveSize >= destY; srcX -= moveSize, srcY -= moveSize)
-					{
-						for (int i = 0; i < 32; i++)
-						{
-							if (AllPic[i].grab_destR_x() == srcX && AllPic[i].grab_destR_y() == srcY)
-							{
-								biasMove = 0;
-							}
-						}
-					}
-				}
-				else if (biasMove == 3)
-				{
-					for (int srcX = Pic.positionBeforeMove.x, srcY = Pic.positionBeforeMove.y, destX = Pic.grab_destR_x(), destY = Pic.grab_destR_y(); srcX + moveSize <= destX && srcY - moveSize >= destY; srcX += moveSize, srcY -= moveSize)
-					{
-						for (int i = 0; i < 32; i++)
-						{
-							if (AllPic[i].grab_destR_x() == srcX && AllPic[i].grab_destR_y() == srcY)
-							{
-								biasMove = 0;
-							}
-						}
-					}
-				}
-				else if (biasMove == 4)
-				{
-					for (int srcX = Pic.positionBeforeMove.x, srcY = Pic.positionBeforeMove.y, destX = Pic.grab_destR_x(), destY = Pic.grab_destR_y(); srcX - moveSize >= destX && srcY + moveSize <= destY; srcX -= moveSize, srcY += moveSize)
-					{
-						for (int i = 0; i < 32; i++)
-						{
-							if (AllPic[i].grab_destR_x() == srcX && AllPic[i].grab_destR_y() == srcY)
-							{
-								biasMove = 0;
-							}
-						}
-					}
-				}
-
-				// Check if any piece have the same position
-				for (int i = 0; i < 16; i++)
-				{
-					if (Pic.grab_destR_x() == AllPic[i].grab_destR_x() && Pic.grab_destR_y() == AllPic[i].grab_destR_y())
-					{
-						samePos = i;
-					}
-				}
-
-				// If this piece did diagonally move and another piece is detected -> Knock down a piece, Pass token to black pieces
-				// Else if this piece did diagonally move -> Pass token to black pieces
-				// Else if Rook movement
-				// Else -> Restore old position
-				if (biasMove != 0 && samePos != 100)
-				{
-					moveToken = 0;
-					AllPic[samePos].set_destR_w_h((int)(((windowHeight / 8) * 0.61) / 2), (int)((windowHeight / 8) / 2));
-					AllPic[samePos].set_destR_x_y(throw_x, throw_y);
-					throw_y += (int)((windowHeight / 8) * 0.48);
-				}
-				else if (biasMove != 0 && samePos == 100)
-				{
-					moveToken = 0;
-				}
-
-			// Rook movement #############################################
-
-				else if (Pic.grab_destR_x() == Pic.positionBeforeMove.x || Pic.grab_destR_y() == Pic.positionBeforeMove.y)
-				{
-					bool wrongMove = false;
-					int samePos = 100;
-
-					// Check if piece don't came across any other piece horizontally or vertically
-					for (int i = 0; i < 32; i++)
-					{
-						// Up and right move
-						for (int cnt = moveSize; cnt <= moveSize*7; cnt += moveSize)
-						{
-							if ((Pic.positionBeforeMove.x + cnt == AllPic[i].grab_destR_x() && Pic.positionBeforeMove.y == AllPic[i].grab_destR_y()) && Pic.grab_destR_x() > AllPic[i].grab_destR_x())
-							{
-								wrongMove = true;
-							}
-
-							if ((Pic.positionBeforeMove.y + cnt == AllPic[i].grab_destR_y() && Pic.positionBeforeMove.x == AllPic[i].grab_destR_x()) && Pic.grab_destR_y() > AllPic[i].grab_destR_y())
-							{
-								wrongMove = true;
-							}
-						}
-
-						// Down and left move
-						for (int cnt = moveSize*7; cnt >= 0; cnt -= moveSize)
-						{
-							if ((Pic.positionBeforeMove.x - cnt == AllPic[i].grab_destR_x() && Pic.positionBeforeMove.y == AllPic[i].grab_destR_y()) && Pic.grab_destR_x() < AllPic[i].grab_destR_x())
-							{
-								wrongMove = true;
-							}
-
-							if ((Pic.positionBeforeMove.y - cnt == AllPic[i].grab_destR_y() && Pic.positionBeforeMove.x == AllPic[i].grab_destR_x()) && Pic.grab_destR_y() < AllPic[i].grab_destR_y())
-							{
-								wrongMove = true;
-							}
-						}
-
-						// If the player clicked but did not make a move
-						if (Pic.positionBeforeMove.x == Pic.grab_destR_x() && Pic.positionBeforeMove.y == Pic.grab_destR_y())
-						{
-							wrongMove = true;
-						}
-
-						// If piece made a wrong move -> Restore old position, break loop
-						if (wrongMove == true)
-						{
-							Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
-							break;
-						}
-					}
-
-					// Check if any piece have the same position
-					for (int i = 0; i < 16; i++)
-					{
-						if (Pic.grab_destR_x() == AllPic[i].grab_destR_x() && Pic.grab_destR_y() == AllPic[i].grab_destR_y())
-						{
-							samePos = i;
-						}
-					}
-
-					// If any piece have the same position and no collision is detected -> Knock down a piece, Pass token to white pieces
-					// Else if no elements with the same position are detected and no collision has occurred -> Pass token to white pieces
-					if (samePos != 100 && wrongMove == false)
-					{
-						moveToken = 0;
-						AllPic[samePos].set_destR_w_h((int)(((windowHeight / 8) * 0.61) / 2), (int)((windowHeight / 8) / 2));
-						AllPic[samePos].set_destR_x_y(throw_x, throw_y);
-						throw_y += (int)((windowHeight / 8) * 0.48);
-					}
-					else if (samePos == 100 && wrongMove == false)
-					{
-						moveToken = 0;
-					}
+					Pic.restoreOldPosition();
 				}
 				else
 				{
-					Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
+					moveToken = 0;
 				}
 			}
 			else if (Pic.checkName() == "King"	)	
 			{
-				// If the piece moved one space in any direction
-				// Else -> Restore old position
-				if ((Pic.grab_destR_x() == Pic.positionBeforeMove.x + moveSize || Pic.grab_destR_x() == Pic.positionBeforeMove.x - moveSize || Pic.grab_destR_x() == Pic.positionBeforeMove.x) && (Pic.grab_destR_y() == Pic.positionBeforeMove.y + moveSize || Pic.grab_destR_y() == Pic.positionBeforeMove.y - moveSize || Pic.grab_destR_y() == Pic.positionBeforeMove.y))
+				if (Pic.movement_King(AllPic, throw_y) == false)
 				{
-					int samePos = 100;
-
-					// Check if any piece have the same position
-					for (int i = 0; i < 16; i++)
-					{
-						if (Pic.grab_destR_x() == AllPic[i].grab_destR_x() && Pic.grab_destR_y() == AllPic[i].grab_destR_y())
-						{
-							samePos = i;
-						}
-					}
-
-					// If any piece have the same position -> Knock down a piece, Pass token to white pieces
-					// Else if move is correct but no elements with the same position are detected
-					if (samePos != 100)
-					{
-						moveToken = 0;
-						AllPic[samePos].set_destR_w_h((int)(((windowHeight / 8) * 0.61) / 2), (int)((windowHeight / 8) / 2));
-						AllPic[samePos].set_destR_x_y(throw_x, throw_y);
-						throw_y += (int)((windowHeight / 8) * 0.48);
-					}
-					else if (samePos == 100)
-					{
-						moveToken = 0;
-					}
-
-					// If player is dumb and move on the same place -> don't pass token to white pieces
-					if (Pic.grab_destR_x() == Pic.positionBeforeMove.x && Pic.grab_destR_y() == Pic.positionBeforeMove.y)
-					{
-						moveToken = 1;
-					}
+					Pic.restoreOldPosition();
 				}
 				else
 				{
-					Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
+					moveToken = 0;
 				}
 			}
 
@@ -1305,7 +851,7 @@ void handlingPieceMovement(Pieces& Pic, Pieces AllPic[32], int toka)
 			if (Pic.grab_destR_x() > ((moveSize * 7) + ((windowHeight / 8) * 0, 22) + 7))
 			{
 				std::cout << "co";
-				Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
+				Pic.restoreOldPosition();
 				moveToken = 1;
 			}
 		}
@@ -1322,8 +868,6 @@ void handlingPieceMovement(Pieces& Pic, Pieces AllPic[32], int toka)
 			std::cout << "\nRuch Bialego\n";
 		}
 		
-		Pic.set_destR_x_y(Pic.positionBeforeMove.x, Pic.positionBeforeMove.y);
+		Pic.restoreOldPosition();
 	}
-
-
 }
