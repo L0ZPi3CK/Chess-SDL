@@ -215,21 +215,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ChessPiece.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Map.cpp" />
-    <ClCompile Include="program.cpp" />
-    <ClCompile Include="Promotion.cpp" />
-    <ClCompile Include="Window2Tex.cpp" />
-    <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="src\ChessPiece.cpp" />
+    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Map.cpp" />
+    <ClCompile Include="src\program.cpp" />
+    <ClCompile Include="src\Promotion.cpp" />
+    <ClCompile Include="src\TextureManager.cpp" />
+    <ClCompile Include="src\Window2Tex.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ChessPiece.h" />
-    <ClInclude Include="Map.h" />
-    <ClInclude Include="program.h" />
-    <ClInclude Include="Promotion.h" />
-    <ClInclude Include="Window2Tex.h" />
-    <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="src\ChessPiece.h" />
+    <ClInclude Include="src\Map.h" />
+    <ClInclude Include="src\Promotion.h" />
+    <ClInclude Include="src\TextureManager.h" />
+    <ClInclude Include="src\Window2Tex.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\black_square.png" />

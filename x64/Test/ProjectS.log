@@ -1,2 +1,9 @@
 ﻿  ChessPiece.cpp
+  Main.cpp
+  Map.cpp
+  program.cpp
+  Promotion.cpp
+  TextureManager.cpp
+  Window2Tex.cpp
+  Generating Code...
   ProjectS.vcxproj -> D:\Chess-SDL\x64\Test\ProjectS.exe

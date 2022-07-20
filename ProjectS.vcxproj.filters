@@ -24,45 +24,42 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
+    <ClCompile Include="src\ChessPiece.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="program.cpp">
-      <Filter>Pliki źródłowe</Filter>
-    </ClCompile>
-    <ClCompile Include="TextureManager.cpp">
+    <ClCompile Include="src\Map.cpp">
       <Filter>Pliki źródłowe\Entity Component System</Filter>
     </ClCompile>
-    <ClCompile Include="ChessPiece.cpp">
+    <ClCompile Include="src\program.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="Map.cpp">
-      <Filter>Pliki źródłowe\Entity Component System</Filter>
-    </ClCompile>
-    <ClCompile Include="Promotion.cpp">
+    <ClCompile Include="src\Promotion.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="Window2Tex.cpp">
+    <ClCompile Include="src\Window2Tex.cpp">
       <Filter>Pliki źródłowe\Entity Component System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TextureManager.cpp">
+      <Filter>Pliki źródłowe\Entity Component System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Main.cpp">
+      <Filter>Pliki źródłowe</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="program.h">
+    <ClInclude Include="src\ChessPiece.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="TextureManager.h">
+    <ClInclude Include="src\TextureManager.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Map.h">
       <Filter>Pliki nagłówkowe\Entity Component System</Filter>
     </ClInclude>
-    <ClInclude Include="ChessPiece.h">
+    <ClInclude Include="src\Promotion.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Map.h">
-      <Filter>Pliki nagłówkowe\Entity Component System</Filter>
-    </ClInclude>
-    <ClInclude Include="Promotion.h">
-      <Filter>Pliki nagłówkowe</Filter>
-    </ClInclude>
-    <ClInclude Include="Window2Tex.h">
+    <ClInclude Include="src\Window2Tex.h">
       <Filter>Pliki nagłówkowe\Entity Component System</Filter>
     </ClInclude>
   </ItemGroup>
