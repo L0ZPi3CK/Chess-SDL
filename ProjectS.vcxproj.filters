@@ -62,6 +62,9 @@
     <ClInclude Include="src\Window2Tex.h">
       <Filter>Pliki nagłówkowe\Entity Component System</Filter>
     </ClInclude>
+    <ClInclude Include="src\program.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\chess.png">
